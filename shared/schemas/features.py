@@ -1,13 +1,5 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    DateTime
-)
-
+from sqlalchemy import (Column,Integer,String,Float,DateTime)
 from shared.configs.base import Base
-
 
 class FeatureStore(Base):
 
@@ -27,6 +19,20 @@ class FeatureStore(Base):
 
     volatility_10 = Column(Float)
 
+    rsi_14 = Column(Float)
+
+    macd = Column(Float)
+
+    macd_signal = Column(Float)
+
+    bb_upper = Column(Float)
+
+    bb_lower = Column(Float)
+
+    volume_ma_10 = Column(Float)
+
+    volume_change = Column(Float)
+    
     lag_1 = Column(Float)
 
     lag_2 = Column(Float)

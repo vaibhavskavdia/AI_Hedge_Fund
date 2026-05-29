@@ -9,7 +9,7 @@ from shared.schemas.stock_prices import StockPrice
 
 def fetch_stock_data(
     ticker: str,
-    period: str = "1mo"
+    period: str = "10y"
 ):
 
     print(f"Fetching data for {ticker}...")
@@ -69,11 +69,15 @@ def store_stock_data(
 if __name__ == "__main__":
 
     tickers = [
-        "AAPL",
-        "MSFT",
-        "GOOGL",
-        "TSLA",
-        "NVDA"
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "NVDA",
+         "TSLA",
+         "META",
+         "AMZN",
+         "JPM",
+         "SPY"
     ]
 
     for ticker in tickers:
