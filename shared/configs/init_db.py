@@ -5,7 +5,7 @@ from shared.schemas.stock_prices import StockPrice
 from shared.schemas.news import NewsArticle
 from shared.schemas.predictions import Prediction
 from shared.schemas.features import FeatureStore
-
+from shared.schemas.news_sentiment import NewsSentiment
 print("Creating database tables...")
 
 

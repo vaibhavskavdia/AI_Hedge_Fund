@@ -48,3 +48,16 @@ mean_accuracy = (sum(accuracies)/ len(accuracies))
 print("\nCross Validation Accuracies:")
 print(accuracies)
 print(f"\nMean Accuracy: "f"{mean_accuracy:.4f}")
+
+import joblib
+
+final_model = XGBClassifier(n_estimators=100,max_depth=4,learning_rate=0.05,random_state=42)
+
+final_model.fit(X, y)
+
+joblib.dump(
+    final_model,
+    "ml/models/artifacts/xgboost_model.pkl"
+)
+
+print("Model saved successfully!")
