@@ -34,12 +34,8 @@ def build_portfolio():
     if len(portfolio) == 0:
         logger.warning("No long positions generated")
         return
-
-    # Probability weights
-
-    
-
     # Position cap
+
     if len(portfolio) > 5:
         portfolio["weight"] = portfolio["weight"].clip(upper=0.20)
         portfolio["weight"] = portfolio["weight"] / portfolio["weight"].sum()
