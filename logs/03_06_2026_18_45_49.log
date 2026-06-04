@@ -1,0 +1,9 @@
+2026-06-03 18:45:49,595 - 30 - AI-Hedge_Fund - INFO - Loading predictions
+2026-06-03 18:45:49,941 - 34 - AI-Hedge_Fund - INFO - Loading prices
+2026-06-03 18:45:50,044 - 62 - AI-Hedge_Fund - INFO - Merging predictions and returns
+2026-06-03 18:45:50,051 - 68 - AI-Hedge_Fund - INFO - Merged rows: 18696
+2026-06-03 18:45:50,052 - 74 - AI-Hedge_Fund - INFO - Total long signals: 14595
+2026-06-03 18:45:50,441 - 110 - AI-Hedge_Fund - INFO - Total Return: 7.0804
+2026-06-03 18:45:50,442 - 112 - AI-Hedge_Fund - INFO - Sharpe Ratio: 1.0491
+2026-06-03 18:45:50,442 - 114 - AI-Hedge_Fund - INFO - Max Drawdown: -0.4576
+2026-06-03 18:45:50,442 - 116 - AI-Hedge_Fund - INFO - Win Rate: 0.5586

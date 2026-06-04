@@ -70,7 +70,7 @@ print(df.head(15))
 def store_features(df):
 
     db: Session = SessionLocal()
-
+    db.query(FeatureStore).delete()
     try:
 
         for _, row in df.iterrows():

@@ -1,0 +1,1 @@
+FEATURE_COLUMNS = [ "returns","sma_10","ema_10","volatility_10","lag_1","lag_2","rsi_14","macd","macd_signal","bb_upper","bb_lower","volume_ma_10","volume_change"]
