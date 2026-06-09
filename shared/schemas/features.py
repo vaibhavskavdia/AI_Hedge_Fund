@@ -1,5 +1,13 @@
-from sqlalchemy import (Column,Integer,String,Float,DateTime)
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Float,
+    DateTime
+)
+
 from shared.configs.base import Base
+
 
 class FeatureStore(Base):
 
@@ -7,7 +15,7 @@ class FeatureStore(Base):
 
     id = Column(Integer, primary_key=True)
 
-    ticker = Column(String, index=True)
+    ticker = Column(String)
 
     timestamp = Column(DateTime)
 
@@ -32,9 +40,19 @@ class FeatureStore(Base):
     volume_ma_10 = Column(Float)
 
     volume_change = Column(Float)
-    
+
     lag_1 = Column(Float)
 
     lag_2 = Column(Float)
+
+    target = Column(Integer)
+    
+    avg_sentiment_score = Column(Float)
+
+    positive_count = Column(Integer)
+
+    negative_count = Column(Integer)
+
+    neutral_count = Column(Integer)
 
     target = Column(Integer)

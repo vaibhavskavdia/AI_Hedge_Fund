@@ -4,7 +4,7 @@ from shared.configs.database import engine
 from sqlalchemy.orm import Session
 from shared.schemas.features import FeatureStore
 from shared.configs.database import SessionLocal
-
+from shared.schemas.news_features import NewsFeature
 QUERY = """
 SELECT *
 FROM stock_prices
@@ -70,28 +70,83 @@ print(df.head(15))
 def store_features(df):
 
     db: Session = SessionLocal()
+
     db.query(FeatureStore).delete()
+
     try:
 
+        sentiment_lookup = {}
+
+        news_features = db.query(
+            NewsFeature
+        ).all()
+
+        for news in news_features:
+
+            sentiment_lookup[news.ticker] = news
+
         for _, row in df.iterrows():
+
+            news = sentiment_lookup.get(
+                row["ticker"]
+            )
 
             feature_entry = FeatureStore(
 
                 ticker=row["ticker"],
+
                 timestamp=row["timestamp"],
+
                 returns=float(row["returns"]),
+
                 sma_10=float(row["sma_10"]),
+
                 ema_10=float(row["ema_10"]),
-                volatility_10=float(row["volatility_10"]),
+
+                volatility_10=float(
+                    row["volatility_10"]
+                ),
+
                 rsi_14=float(row["rsi_14"]),
+
                 macd=float(row["macd"]),
-                macd_signal=float(row["macd_signal"]),
+
+                macd_signal=float(
+                    row["macd_signal"]
+                ),
+
                 bb_upper=float(row["bb_upper"]),
+
                 bb_lower=float(row["bb_lower"]),
-                volume_ma_10=float(row["volume_ma_10"]),
-                volume_change=float(row["volume_change"]),
+
+                volume_ma_10=float(
+                    row["volume_ma_10"]
+                ),
+
+                volume_change=float(
+                    row["volume_change"]
+                ),
+
                 lag_1=float(row["lag_1"]),
+
                 lag_2=float(row["lag_2"]),
+
+                avg_sentiment_score=
+                    float(news.avg_sentiment_score)
+                    if news else 0.0,
+
+                positive_count=
+                    int(news.positive_count)
+                    if news else 0,
+
+                negative_count=
+                    int(news.negative_count)
+                    if news else 0,
+
+                neutral_count=
+                    int(news.neutral_count)
+                    if news else 0,
+
                 target=int(row["target"])
             )
 
@@ -99,7 +154,9 @@ def store_features(df):
 
         db.commit()
 
-        print("Features stored successfully!")
+        print(
+            "Features stored successfully!"
+        )
 
     except Exception as e:
 

@@ -15,7 +15,8 @@ df = pd.read_sql(text(QUERY),engine)
 
 # Feature Columns
 FEATURE_COLUMNS = [ "returns","sma_10","ema_10","volatility_10","lag_1","lag_2","rsi_14","macd",
-                   "macd_signal","bb_upper","bb_lower","volume_ma_10","volume_change"]
+                   "macd_signal","bb_upper","bb_lower","volume_ma_10","volume_change","avg_sentiment_score",
+                   "positive_count","negative_count","neutral_count"]
 # Inputs and Target
 print("Dataframe Shape:", df.shape)
 print(df.head())

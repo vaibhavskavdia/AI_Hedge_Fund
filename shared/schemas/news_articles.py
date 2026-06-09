@@ -2,17 +2,16 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    Float,
     DateTime,
-    ForeignKey
+    Text
 )
 
 from shared.configs.base import Base
 
 
-class NewsSentiment(Base):
+class NewsArticle(Base):
 
-    __tablename__ = "news_sentiment"
+    __tablename__ = "news_articles"
 
     id = Column(
         Integer,
@@ -25,11 +24,14 @@ class NewsSentiment(Base):
         index=True
     )
 
-    timestamp = Column(DateTime)
+    headline = Column(Text)
 
-    headline = Column(String)
+    summary = Column(Text)
 
-    sentiment = Column(String)
+    source = Column(String)
 
-    score = Column(Float)
+    url = Column(Text)
 
+    published_at = Column(DateTime)
+
+    created_at = Column(DateTime)

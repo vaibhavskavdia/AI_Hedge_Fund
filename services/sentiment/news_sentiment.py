@@ -1,42 +1,31 @@
-import yfinance as yf
 from transformers import pipeline
 from shared.configs.database import SessionLocal
-from sqlalchemy.orm import Session
+from shared.schemas.news_articles import NewsArticle
 from shared.schemas.news_sentiment import NewsSentiment
+from logger import logger
 
-db: Session = SessionLocal()
 sentiment_model = pipeline("text-classification",model="ProsusAI/finbert")
-ticker = "AAPL"
-stock = yf.Ticker(ticker)
-news = stock.news
-def sentiment_to_score(label, score):
+def generate_news_sentiment():
 
-    if label == "positive":
-        return score
+    logger.info("Generating sentiment scores")
+    db = SessionLocal()
+    articles = (db.query(NewsArticle).all())
+    total_processed = 0
+    for article in articles:
+        try:
+            if not article.headline:
+                continue
+            result = sentiment_model(article.headline)[0]
+            sentiment = result["label"]
+            score = float(result["score"])
+            sentiment_row = NewsSentiment(ticker=article.ticker,timestamp=article.created_at,headline=article.headline,sentiment=sentiment,score=score)
+            db.add(sentiment_row)
+            total_processed += 1
+        except Exception as e:
+            logger.error(f"{article.id}: {e}")
+    db.commit()
+    db.close()
+    logger.info(f"Processed {total_processed} articles")
+if __name__ == "__main__":
 
-    elif label == "negative":
-        return -score
-
-    return 0.0
-
-for article in news[:10]:
-
-    title = article["content"]["title"]
-
-    result = sentiment_model(title)[0]
-    
-
-    numeric_score = sentiment_to_score(result["label"],result["score"])
-    news_entry = NewsSentiment(ticker=ticker,headline=title,sentiment=result["label"],score=float(numeric_score))
-
-    db.add(news_entry)
-    print("\nHeadline:")
-    print(title)
-
-    print("Sentiment:")
-    print(result)
-
-db.commit()
-db.close()
-
-print("News sentiment stored successfully!")
+    generate_news_sentiment()

@@ -3,16 +3,15 @@ from sqlalchemy import (
     Integer,
     String,
     Float,
-    DateTime,
-    ForeignKey
+    DateTime
 )
 
 from shared.configs.base import Base
 
 
-class NewsSentiment(Base):
+class NewsFeature(Base):
 
-    __tablename__ = "news_sentiment"
+    __tablename__ = "news_features"
 
     id = Column(
         Integer,
@@ -21,15 +20,15 @@ class NewsSentiment(Base):
 
     ticker = Column(
         String,
-        nullable=False,
         index=True
     )
 
     timestamp = Column(DateTime)
 
-    headline = Column(String)
+    avg_sentiment_score = Column(Float)
 
-    sentiment = Column(String)
+    positive_count = Column(Integer)
 
-    score = Column(Float)
+    negative_count = Column(Integer)
 
+    neutral_count = Column(Integer)

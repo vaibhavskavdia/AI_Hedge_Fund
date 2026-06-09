@@ -1,11 +1,9 @@
-from shared.configs.database import engine
+from agents.research_agent import ResearchAgent
 
-try:
-    connection = engine.connect()
+agent = ResearchAgent()
 
-    print("Database connected successfully!")
+response = agent.analyze(
+    "What are the major opportunities for Tesla?"
+)
 
-    connection.close()
-
-except Exception as e:
-    print("Connection failed:", e)
+print(response)

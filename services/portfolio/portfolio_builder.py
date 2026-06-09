@@ -26,7 +26,7 @@ def build_portfolio():
 
     # Long signals only
 
-    portfolio = df[df["prediction_probability"] >= 0.53].copy()
+    portfolio = df[df["prediction_probability"] >= 0.50].copy()
     total_prob = portfolio["prediction_probability"].sum()
 
     portfolio["weight"] = (portfolio["prediction_probability"]/ total_prob)
@@ -43,6 +43,10 @@ def build_portfolio():
     db: Session = SessionLocal()
 
     try:
+
+        db.query(PortfolioPosition).delete()
+        db.commit()
+
 
         for _, row in portfolio.iterrows():
 

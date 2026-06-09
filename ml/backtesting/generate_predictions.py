@@ -25,8 +25,7 @@ def generate_backtest_predictions():
     db = SessionLocal()
     logger.info("Clearing old backtest predictions")
 
-    db.query(BacktestPrediction).delete()
-    db.commit()
+  
     total_predictions = 0
     for fold, (train_idx,test_idx) in enumerate(tscv.split(X),start=1):
 
