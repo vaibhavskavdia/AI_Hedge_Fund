@@ -7,18 +7,9 @@ from shared.schemas.news_articles import NewsArticle
 
 from logger import logger
 
+from shared.constants.universe import SP500_UNIVERSE
 
-TICKERS = [
-    "AAPL",
-    "MSFT",
-    "NVDA",
-    "AMZN",
-    "META",
-    "GOOGL",
-    "TSLA",
-    "JPM",
-    "SPY"
-]
+TICKERS = SP500_UNIVERSE
 
 
 def ingest_news():
@@ -42,78 +33,29 @@ def ingest_news():
                 news_items = stock.news
 
                 if not news_items:
-                    logger.warning(
-                        f"No news found for {ticker}"
-                    )
+                    logger.warning(f"No news found for {ticker}")
                     continue
 
                 for item in news_items:
 
-                    content = item.get(
-                        "content",
-                        {}
-                    )
-
+                    content = item.get("content",{})
                     published_at = None
-
                     try:
-
-                        pub_date = content.get(
-                            "pubDate"
-                        )
+                        pub_date = content.get("pubDate")
 
                         if pub_date:
 
                             published_at = (
-                                datetime.fromisoformat(
-                                    pub_date.replace(
-                                        "Z",
-                                        "+00:00"
-                                    )
-                                )
-                            )
+                                datetime.fromisoformat(pub_date.replace("Z","+00:00")))
 
                     except Exception:
 
                         published_at = None
 
-                    article = NewsArticle(
-
-                        ticker=ticker,
-
-                        headline=content.get(
-                            "title"
-                        ),
-
-                        summary=content.get(
-                            "summary"
-                        ),
-
-                        source=(
-                            content.get(
-                                "provider",
-                                {}
-                            ).get(
-                                "displayName"
-                            )
-                        ),
-
-                        url=(
-                            content.get(
-                                "canonicalUrl",
-                                {}
-                            ).get(
-                                "url"
-                            )
-                        ),
-
-                        published_at=published_at,
-
-                        created_at=datetime.utcnow()
-                    )
-
+                    article = NewsArticle(ticker=ticker,headline=content.get("title"),summary=content.get("summary"),
+                        source=(content.get( "provider", {}).get("displayName")),url=(content.get("canonicalUrl",{}).get("url")),
+                        published_at=published_at,created_at=datetime.utcnow())
                     db.add(article)
-
                     total_articles += 1
 
             except Exception as e:

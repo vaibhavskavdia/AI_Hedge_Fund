@@ -14,7 +14,8 @@ from shared.schemas.knowledge_documents import KnowledgeDocument
 from shared.schemas.news_articles import NewsArticle
 from shared.schemas.news_features import NewsFeature
 from shared.schemas.raw_documents import RawDocument
-
+from shared.schemas.portfolio_risk import PortfolioRisk 
+from shared.schemas.final_portfolio import FinalPortfolio   
 
 
 print("Creating database tables...")

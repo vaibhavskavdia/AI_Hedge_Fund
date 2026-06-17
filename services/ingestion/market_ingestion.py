@@ -1,16 +1,13 @@
 import yfinance as yf
 import pandas as pd
-
 from sqlalchemy.orm import Session
-
 from shared.configs.database import SessionLocal
 from shared.schemas.stock_prices import StockPrice
+from shared.constants.universe import SP500_UNIVERSE
 
+tickers = SP500_UNIVERSE
 
-def fetch_stock_data(
-    ticker: str,
-    period: str = "10y"
-):
+def fetch_stock_data(ticker: str,period: str = "10y"):
 
     print(f"Fetching data for {ticker}...")
 
@@ -21,10 +18,7 @@ def fetch_stock_data(
     return df
 
 
-def store_stock_data(
-    ticker: str,
-    df: pd.DataFrame
-):
+def store_stock_data(ticker: str,df: pd.DataFrame):
 
     db: Session = SessionLocal()
 
@@ -32,21 +26,8 @@ def store_stock_data(
 
         for index, row in df.iterrows():
 
-            stock_entry = StockPrice(
-
-                ticker=ticker,
-
-                timestamp=index.to_pydatetime(),
-
-                open=float(row["Open"]),
-
-                high=float(row["High"]),
-
-                low=float(row["Low"]),
-
-                close=float(row["Close"]),
-
-                volume=float(row["Volume"])
+            stock_entry = StockPrice(ticker=ticker,timestamp=index.to_pydatetime(),open=float(row["Open"]),
+                                     high=float(row["High"]),low=float(row["Low"]),close=float(row["Close"]),volume=float(row["Volume"])
             )
 
             db.add(stock_entry)
@@ -67,19 +48,7 @@ def store_stock_data(
 
 
 if __name__ == "__main__":
-
-    tickers = [
-         "AAPL",
-         "MSFT",
-         "GOOGL",
-         "NVDA",
-         "TSLA",
-         "META",
-         "AMZN",
-         "JPM",
-         "SPY"
-    ]
-
+    
     for ticker in tickers:
 
         data = fetch_stock_data(ticker)

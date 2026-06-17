@@ -13,11 +13,7 @@ def load_transcripts():
 
     db = SessionLocal()
 
-    files = [
-        f
-        for f in os.listdir(TRANSCRIPT_DIR)
-        if f.endswith(".txt")
-    ]
+    files = [f for f in os.listdir(TRANSCRIPT_DIR) if f.endswith(".txt")]
 
     print(f"Found {len(files)} transcripts")
 

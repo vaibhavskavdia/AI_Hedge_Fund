@@ -14,9 +14,29 @@ ORDER BY timestamp;
 df = pd.read_sql(text(QUERY),engine)
 
 # Feature Columns
-FEATURE_COLUMNS = [ "returns","sma_10","ema_10","volatility_10","lag_1","lag_2","rsi_14","macd",
-                   "macd_signal","bb_upper","bb_lower","volume_ma_10","volume_change","avg_sentiment_score",
-                   "positive_count","negative_count","neutral_count"]
+FEATURE_COLUMNS = [ 
+    "returns",
+    "sma_10",
+    "ema_10",
+    "volatility_10",
+    "rsi_14",
+    "macd",
+    "macd_signal",
+    "bb_upper",
+    "bb_lower",
+    "volume_ma_10",
+    "volume_change",
+    "volume_spike",
+    "relative_strength",
+    "dist_52w_high",
+    "dist_52w_low",
+    "lag_1",
+    "lag_2",
+    "avg_sentiment_score",
+    "positive_count",
+    "negative_count",
+    "neutral_count"
+]
 # Inputs and Target
 print("Dataframe Shape:", df.shape)
 print(df.head())
@@ -52,7 +72,17 @@ print(f"\nMean Accuracy: "f"{mean_accuracy:.4f}")
 
 import joblib
 
-final_model = XGBClassifier(n_estimators=100,max_depth=4,learning_rate=0.05,random_state=42)
+final_model = XGBClassifier(n_estimators=500,
+    max_depth=6,
+    learning_rate=0.03,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    min_child_weight=5,
+    gamma=0.1,
+    reg_alpha=0.1,
+    reg_lambda=1.0,
+    random_state=42,
+    n_jobs=-1)
 
 final_model.fit(X, y)
 

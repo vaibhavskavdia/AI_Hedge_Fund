@@ -41,12 +41,18 @@ class FeatureStore(Base):
 
     volume_change = Column(Float)
 
+    volume_spike = Column(Float)
+
+    relative_strength = Column(Float)
+
+    dist_52w_high = Column(Float)
+
+    dist_52w_low = Column(Float)
+
     lag_1 = Column(Float)
 
     lag_2 = Column(Float)
 
-    target = Column(Integer)
-    
     avg_sentiment_score = Column(Float)
 
     positive_count = Column(Integer)
