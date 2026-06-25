@@ -36,6 +36,7 @@ FEATURE_COLUMNS = [
     "positive_count",
     "negative_count",
     "neutral_count"
+    ,"future_return_5d"
 ]
 # Inputs and Target
 print("Dataframe Shape:", df.shape)

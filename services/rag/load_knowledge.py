@@ -1,103 +1,51 @@
+from pathlib import Path
 from datetime import datetime
 
 from shared.configs.database import SessionLocal
-from shared.schemas.knowledge_documents import KnowledgeDocument
+from shared.schemas.raw_documents import RawDocument
+
+
+RAG_FOLDER = Path("data/rag/earnings_calls")
 
 
 def load_knowledge():
 
     db = SessionLocal()
 
-    documents = [
-
-        {
-            "document_type": "company_research",
-            "source": "manual",
-            "title": "Apple Business Overview",
-            "content": """
-Apple Inc designs consumer electronics,
-software and cloud services.
-
-Major revenue sources:
-- iPhone
-- Mac
-- iPad
-- Services
-- Wearables
-
-Strengths:
-Strong brand loyalty
-Large ecosystem
-Recurring services revenue
-
-Risks:
-Dependence on iPhone sales
-China exposure
-Regulatory pressure
-"""
-        },
-
-        {
-            "document_type": "company_research",
-            "source": "manual",
-            "title": "Microsoft Business Overview",
-            "content": """
-Microsoft operates across:
-
-- Azure Cloud
-- Office 365
-- Windows
-- Gaming
-- AI
-
-Strengths:
-Enterprise dominance
-Cloud growth
-Strong balance sheet
-
-Risks:
-Cloud competition
-Regulatory pressure
-"""
-        },
-
-        {
-            "document_type": "market_research",
-            "source": "manual",
-            "title": "General Market Risk Factors",
-            "content": """
-Stock markets are affected by:
-
-Interest rates
-Inflation
-Economic growth
-Geopolitical events
-Corporate earnings
-
-Higher interest rates often reduce growth stock valuations.
-"""
-        }
-
-    ]
-
-    db.query(KnowledgeDocument).delete()
-
-    for doc in documents:
-
-        db.add(
-            KnowledgeDocument(
-                document_type=doc["document_type"],
-                source=doc["source"],
-                title=doc["title"],
-                content=doc["content"],
-                created_at=datetime.utcnow()
-            )
+    existing_files = {row.file_path for row in db.query(RawDocument.file_path).all()}
+    txt_files = list(RAG_FOLDER.glob("*.txt"))
+    print(f"Found {len(txt_files)} transcript files")
+    added = 0
+    skipped = 0
+    for file in txt_files:
+        file_path = str(file)
+        if file_path in existing_files:
+            skipped += 1
+            continue
+        content = file.read_text(encoding="utf-8",errors="ignore")
+        ticker = file.stem.upper()
+        document = RawDocument(
+            ticker=ticker,
+            filing_type="earnings_call",
+            filing_date=None,
+            source_url=None,
+            file_path=file_path,
+            processed=False,
+            source="earnings_call",
+            content=content,
+            quarter="Q1",
+            year="2026",
+            created_at=datetime.utcnow()
         )
+
+        db.add(document)
+        added += 1
 
     db.commit()
     db.close()
 
-    print("Knowledge documents loaded successfully")
+    print(f"Added {added} new transcripts")
+    print(f"Skipped {skipped} existing transcripts")
 
 
 if __name__ == "__main__":

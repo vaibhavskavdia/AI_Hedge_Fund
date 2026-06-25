@@ -62,3 +62,5 @@ class FeatureStore(Base):
     neutral_count = Column(Integer)
 
     target = Column(Integer)
+    
+    future_return_5d = Column(Float)

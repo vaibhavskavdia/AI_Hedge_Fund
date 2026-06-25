@@ -1,20 +1,28 @@
 from fastapi import FastAPI
-
 from apps.api.routes.predictions import router as predictions_router
 from apps.api.routes.portfolio import router as portfolio_router
-from apps.api.routes.backtest import router as backtest_router
+#from apps.api.routes.backtest import router as backtest_router
 from apps.api.routes.research import (router as research_router)
-
-app = FastAPI(
-    title="AI Hedge Fund API",
-    version="1.0"
-)
+from apps.api.routes.risk import router as risk_router
+from apps.api.routes.portfolio_intelligence import (router as intelligence_router)
+from apps.api.routes.stock_intelligence import (router as stock_intelligence_router)
+from apps.api.routes.sector_intelligence import (router as sector_intelligence_router)
+from apps.api.routes.risk import router as risk_router
+app = FastAPI(title="AI Hedge Fund API",version="1.0")
 
 app.include_router(predictions_router)
 app.include_router(portfolio_router)
-app.include_router(backtest_router)
+#app.include_router(backtest_router)
 app.include_router(research_router)
-
+app.include_router(risk_router)
+app.include_router(intelligence_router)
+app.include_router(stock_intelligence_router)
+app.include_router(sector_intelligence_router)
+app.include_router(
+    risk_router,
+    prefix="/risk",
+    tags=["Risk"]
+)
 @app.get("/")
 def home():
     return {"message": "AI Hedge Fund API Running"}

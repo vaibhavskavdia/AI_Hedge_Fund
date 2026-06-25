@@ -22,26 +22,15 @@ def get_db():
         db.close()
 
 
-@router.get(
-    "/",
-    response_model=list[PredictionResponse]
-)
-def get_predictions(
-    db: Session = Depends(get_db)
-):
+@router.get("/",response_model=list[PredictionResponse])
+def get_predictions(db: Session = Depends(get_db)):
 
-    predictions = (
-        db.query(Prediction)
-        .all()
-    )
+    predictions = (db.query(Prediction).all())
 
     return predictions
 
 
-@router.get(
-    "/latest",
-    response_model=list[PredictionResponse]
-)
+@router.get("/latest",response_model=list[PredictionResponse])
 def get_latest_predictions(
     db: Session = Depends(get_db)
 ):

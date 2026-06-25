@@ -24,3 +24,6 @@ class PortfolioRisk(Base):
         DateTime,
         default=datetime.utcnow
     )
+    recommendation = Column(String)
+
+    sector = Column(String)

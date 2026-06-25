@@ -1,16 +1,8 @@
 from datetime import datetime
-
-from langchain_text_splitters import (
-    RecursiveCharacterTextSplitter
-)
-
+from langchain_text_splitters import (RecursiveCharacterTextSplitter)
 from shared.configs.database import SessionLocal
-
 from shared.schemas.raw_documents import RawDocument
-from shared.schemas.knowledge_documents import (
-    KnowledgeDocument
-)
-
+from shared.schemas.knowledge_documents import (KnowledgeDocument)
 
 splitter = RecursiveCharacterTextSplitter(
     chunk_size=1500,

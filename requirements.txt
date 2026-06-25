@@ -13,3 +13,4 @@ scikit-learn
 xgboost
 alembic
 sec-edgar-downloader
+pinecone

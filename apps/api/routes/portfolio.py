@@ -8,6 +8,7 @@ from apps.api.schemas.recommendation import PortfolioRecommendation
 from agents.portfolio_manager import PortfolioManager
 from agents.portfolio_construction_agent import PortfolioConstructionAgent
 from services.risk.risk_engine import RiskEngine
+from services.portfolio.portfolio_repository import save_portfolio, get_latest_portfolio
 
 risk_engine = RiskEngine()
 router = APIRouter(prefix="/portfolio",tags=["Portfolio"])
@@ -126,5 +127,47 @@ def ai_portfolio(payload: dict):
     tickers = payload["tickers"]
 
     result = (portfolio_constructor.build_portfolio(tickers))
-
+    portfolio_id = save_portfolio(
+    portfolio=result["portfolio"],
+    recommendations=result["recommendations"],
+    committee_review=result["committee_review"]
+     )
+    result["portfolio_id"]= portfolio_id
     return result
+
+@router.get("/latest")
+def latest_portfolio():
+
+    portfolio = get_latest_portfolio()
+
+    if portfolio is None:
+        return {"error": "No portfolio found"}
+
+    return {
+        "portfolio_id": portfolio.id,
+        "portfolio": portfolio.portfolio,
+        "recommendations": portfolio.recommendations,
+        "committee_review": portfolio.committee_review
+    }
+
+portfolio_manager = PortfolioManager()
+
+@router.get("/portfolio-intelligence")
+def portfolio_intelligence():
+
+    portfolio = get_latest_portfolio()
+
+    if portfolio is None:
+        return {
+            "error": "No portfolio found"
+        }
+
+    analysis = portfolio_manager.analyze_portfolio(
+        portfolio.portfolio
+    )
+
+    analysis["portfolio_id"] = portfolio.id
+
+    analysis["recommendations"] = portfolio.recommendations
+
+    return analysis

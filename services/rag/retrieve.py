@@ -22,69 +22,30 @@ MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 TOP_K = 5
 
 
-model = SentenceTransformer(
-    MODEL_NAME
-)
+model = SentenceTransformer(MODEL_NAME)
 
-pc = Pinecone(
-    api_key=PINECONE_API_KEY
-)
+pc = Pinecone(api_key=PINECONE_API_KEY)
 
-index = pc.Index(
-    PINECONE_INDEX
-)
+index = pc.Index(PINECONE_INDEX)
 
+def retrieve_context(query: str,top_k: int = TOP_K,ticker: str | None = None):
 
-def retrieve_context(
-    query: str,
-    top_k: int = TOP_K,
-    ticker: str | None = None
-):
-
-    query_embedding = model.encode(
-        query
-    ).tolist()
-
-    search_kwargs = {
-        "vector": query_embedding,
-        "top_k": top_k,
-        "include_metadata": True
-    }
-
+    query_embedding = model.encode(query).tolist()
+    search_kwargs = {"vector": query_embedding,"top_k": top_k,"include_metadata": True}
     if ticker:
-
-        search_kwargs["filter"] = {
-            "ticker": {
-                "$eq": ticker
-            }
-        }
-
-    results = index.query(
-        **search_kwargs
-    )
-
+        search_kwargs["filter"] = {"ticker": {"$eq": ticker}}
+    results = index.query(**search_kwargs)
+    
+    print("\nRAW PINECONE RESPONSE:")
+    print(results)
     db = SessionLocal()
-
     retrieved_chunks = []
-
     for match in results["matches"]:
-
-        document_id = (
-            match["metadata"]
-            ["document_id"]
-        )
-
+        print(match["metadata"])
+        document_id = (match["metadata"]["document_id"])
         score = match["score"]
-
-        document = (
-            db.query(KnowledgeDocument)
-            .filter(
-                KnowledgeDocument.id
-                == document_id
-            )
-            .first()
-        )
-
+        document = (db.query(KnowledgeDocument).filter(KnowledgeDocument.id== document_id).first())
+        print("DOCUMENT FOUND:", document)
         if not document:
             continue
 
@@ -92,8 +53,6 @@ def retrieve_context(
             {
                 "document_id": document.id,
                 "ticker": document.ticker,
-                "quarter": document.quarter,
-                "year": document.year,
                 "score": round(score, 4),
                 "content": document.content
             }
@@ -106,38 +65,13 @@ def retrieve_context(
 
 if __name__ == "__main__":
 
-    results = retrieve_context(
-        query="Why is Tesla investing heavily in AI?",
-        ticker="TSLA"
-    )
-
+    results = retrieve_context(query="Why is Tesla investing heavily in AI?")
+    print(index.describe_index_stats())
     print("\nRESULTS\n")
 
-    for idx, result in enumerate(
-        results,
-        start=1
-    ):
+    for idx, result in enumerate(results,start=1):
 
-        print(
-            f"\n--- Result {idx} ---"
-        )
-
-        print(
-            f"Ticker: {result['ticker']}"
-        )
-
-        print(
-            f"Quarter: {result['quarter']}"
-        )
-
-        print(
-            f"Year: {result['year']}"
-        )
-
-        print(
-            f"Score: {result['score']}"
-        )
-
-        print(
-            result["content"]
-        )
+        print(f"\n--- Result {idx} ---")
+        print(f"Ticker: {result['ticker']}")
+        print(f"Score: {result['score']}")
+        print(result["content"])

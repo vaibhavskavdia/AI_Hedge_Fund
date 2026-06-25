@@ -64,7 +64,9 @@ for ticker in df["ticker"].unique():
     ticker_df["lag_1"] = (ticker_df["close"].shift(1))
     ticker_df["lag_2"] = (ticker_df["close"].shift(2))
     # Target
-    future_return_5d = (ticker_df["close"].shift(-5)/ticker_df["close"]- 1)
+    future_return_5d = (ticker_df["close"].shift(-5) / ticker_df["close"] - 1)
+    ticker_df["future_return_5d"] = (ticker_df["close"].shift(-5) / ticker_df["close"] - 1)
+
     ticker_df["target"] = (future_return_5d > 0.010).astype(int)
     ticker_df = ticker_df.dropna()
     all_features.append(ticker_df)
@@ -111,8 +113,8 @@ def store_features(df):
                 positive_count=(int(news.positive_count)if news else 0),
                 negative_count=(int(news.negative_count)if news else 0),
                 neutral_count=(int(news.neutral_count)if news else 0),
-                target=int(row["target"]))
-
+                target=int(row["target"]),
+                future_return_5d=float(row["future_return_5d"]))
             db.add(feature_entry)
         db.commit()
 

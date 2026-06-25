@@ -11,8 +11,6 @@ class ResearchAgent:
         contexts = retrieve_context(query)
         context_text = "\n\n".join([  f"""
                 Ticker: {chunk['ticker']}
-                Quarter: {chunk['quarter']}
-                Year: {chunk['year']}
 
                 {chunk['content']}"""
         for chunk in contexts])

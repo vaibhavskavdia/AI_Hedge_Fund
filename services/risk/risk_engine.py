@@ -174,6 +174,17 @@ class RiskEngine:
                     risk_level
                 )
         }
+        
+    def risk_recommendation(self,risk_score):
+
+        if risk_score > 20:
+            return "Reduce Position"
+
+        elif risk_score > 10:
+            return "Monitor Closely"
+
+        return "Healthy Position"   
+     
 
     def run(self):
 

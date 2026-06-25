@@ -1,9 +1,8 @@
-from agents.research_agent import ResearchAgent
-
-agent = ResearchAgent()
-
-response = agent.analyze(
-    "What are the major opportunities for Tesla?"
-)
-
-print(response)
+from pinecone import Pinecone
+import os
+from dotenv import load_dotenv
+load_dotenv()
+pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+index = pc.Index(os.getenv("PINECONE_INDEX"))
+#index.delete(delete_all=True)
+print(index.describe_index_stats())

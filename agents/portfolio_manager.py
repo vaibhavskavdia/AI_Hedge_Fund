@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from groq import Groq
 from agents.research_agent import ResearchAgent
 from services.rag.memory import save_memory
+from shared.constants.sector_mapper import SECTOR_MAP
 load_dotenv()
 
 class PortfolioManager:
@@ -69,7 +70,7 @@ class PortfolioManager:
 
         content = (response.choices[0].message.content)
         content = (content.replace("```json", "").replace("```", "").strip())
-        save_memory(agent_name="portfolio_manager",memory_key=ticker,memory_value=json.dumps(json.loads(content)))
+        save_memory(agent_name="portfolio_manager",memory_key=ticker,memory_value=str(content))
         try:
             return json.loads(content)
 
@@ -79,7 +80,208 @@ class PortfolioManager:
             return {"ticker": ticker,"rating": "HOLD","conviction": "LOW","position_size": 1,"horizon": "Unknown",
                 "bull_case": "Parsing failed","bear_case": "Parsing failed","recommendation": content}
 
+    def analyze_portfolio(self,portfolio: dict):
 
+    # =====================================
+    # Generate AI Recommendations
+    # =====================================
+
+        recommendations = []
+
+        for ticker in portfolio.keys():
+
+            try:
+                recommendation = self.recommend(ticker=ticker)
+
+                recommendations.append(recommendation)
+
+            except Exception as e:
+
+                print(f"Recommendation failed for {ticker}: {e}")
+
+        # =====================================
+        # Sector Exposure
+        # =====================================
+
+        sector_exposure = {}
+
+        for ticker, weight in portfolio.items():
+
+            sector = SECTOR_MAP.get(ticker,"Unknown")
+
+            sector_exposure[sector] = (sector_exposure.get(sector,0)+ weight)
+
+        # =====================================
+        # Diversification
+        # =====================================
+
+        unique_sectors = len(sector_exposure)
+        diversification_score = min(100,unique_sectors * 15)
+        if diversification_score >= 80:
+            diversification = "Excellent"
+        elif diversification_score >= 60:
+            diversification = "Good"
+        elif diversification_score >= 40:
+            diversification = "Moderate"
+        else:
+            diversification = "Low"
+
+        # =====================================
+        # Concentration Risk
+        # =====================================
+
+        largest_holding = max(portfolio,key=portfolio.get)
+
+        largest_weight = portfolio[largest_holding]
+
+        if largest_weight > 40:
+            risk_score = "High"
+        elif largest_weight > 25:
+            risk_score = "Medium"
+        else:
+            risk_score = "Low"
+
+        # =====================================
+        # Largest Sector
+        # =====================================
+
+        largest_sector = max(sector_exposure,key=sector_exposure.get)
+
+        largest_sector_weight = (sector_exposure[largest_sector])
+
+        # =====================================
+        # Health Score
+        # =====================================
+
+        health_score = (diversification_score- (largest_weight / 2))
+        health_score = max(0,min(100,round(health_score)))
+
+        # =====================================
+        # Rebalancing
+        # =====================================
+
+        if largest_weight > 25:
+
+            rebalance_action = (f"Reduce exposure to "f"{largest_holding}")
+
+        else:
+
+            rebalance_action = (
+                "Portfolio balanced"
+            )
+
+        # =====================================
+        # Manager Commentary
+        # =====================================
+
+        manager_commentary = f"""
+    Portfolio is primarily concentrated in {largest_sector}.
+
+    Largest position is {largest_holding}
+    with {largest_weight:.2f}% allocation.
+
+    Largest sector exposure is {largest_sector}
+    at {largest_sector_weight:.2f}%.
+
+    Diversification level is {diversification}.
+
+    Current concentration risk is {risk_score}.
+
+    Recommendation:
+    {rebalance_action}.
+    """
+
+        # =====================================
+        # Return
+        # =====================================
+
+        return {
+
+            "health_score":
+                health_score,
+
+            "risk_score":
+                risk_score,
+
+            "diversification":
+                diversification,
+
+            "diversification_score":
+                diversification_score,
+
+            "largest_holding":
+                largest_holding,
+
+            "largest_weight":
+                round(
+                    largest_weight,
+                    2
+                ),
+
+            "largest_sector":
+                largest_sector,
+
+            "largest_sector_weight":
+                round(
+                    largest_sector_weight,
+                    2
+                ),
+
+            "sector_exposure":
+                sector_exposure,
+
+            "manager_commentary":
+                manager_commentary,
+
+            "rebalance_action":
+                rebalance_action,
+
+            "recommendations":
+                recommendations
+        }
+    def analyze_risk(self,portfolio: dict):
+    
+        largest_holding = max(
+            portfolio,
+            key=portfolio.get
+        )
+
+        largest_weight = portfolio[
+            largest_holding
+        ]
+
+        # concentration risk
+
+        if largest_weight >= 40:
+            concentration_risk = "HIGH"
+
+        elif largest_weight >= 25:
+            concentration_risk = "MEDIUM"
+
+        else:
+            concentration_risk = "LOW"
+
+        # portfolio risk score
+
+        risk_score = round(
+            largest_weight * 0.2,
+            1
+        )
+
+        return {
+
+            "largest_holding":
+                largest_holding,
+
+            "largest_weight":
+                largest_weight,
+
+            "concentration_risk":
+                concentration_risk,
+
+            "risk_score":
+                risk_score
+        }
 if __name__ == "__main__":
 
     manager = PortfolioManager()
