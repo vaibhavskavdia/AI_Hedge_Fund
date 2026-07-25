@@ -5,12 +5,9 @@ from sqlalchemy.orm import Session
 from shared.configs.database import engine
 from shared.configs.database import SessionLocal
 from shared.schemas.predictions import Prediction
-
+from shared.constants.features import FEATURE_COLUMNS
 MODEL_PATH = "ml/models/artifacts/xgboost_model.pkl"
 
-FEATURE_COLUMNS = ["returns","sma_10","ema_10","volatility_10","lag_1","lag_2","rsi_14","macd",
-                   "macd_signal","bb_upper","bb_lower","volume_ma_10","volume_change","avg_sentiment_score",
-                   "positive_count","negative_count","neutral_count"]
 
 QUERY = """
 SELECT *

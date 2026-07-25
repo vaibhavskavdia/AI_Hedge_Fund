@@ -26,3 +26,13 @@ class PortfolioRun(Base):
     recommendations = Column(JSON,nullable=False)
 
     committee_review = Column(JSON,nullable=False)
+
+    risk_analysis = Column(JSON, nullable=True)
+
+    portfolio_intelligence = Column(JSON, nullable=True)
+
+    research_report = Column(JSON, nullable=True)
+
+    stock_intelligence = Column(JSON, nullable=True)
+
+    sector_intelligence = Column(JSON, nullable=True)

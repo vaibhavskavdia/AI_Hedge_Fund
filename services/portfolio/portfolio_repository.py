@@ -5,7 +5,12 @@ from shared.configs.database import SessionLocal
 def save_portfolio(
     portfolio,
     recommendations,
-    committee_review
+    committee_review,
+    risk_analysis=None,
+    portfolio_intelligence=None,
+    research_report=None,
+    stock_intelligence=None,
+    sector_intelligence=None,
 ):
 
     db = SessionLocal()
@@ -13,7 +18,12 @@ def save_portfolio(
     run = PortfolioRun(
         portfolio=portfolio,
         recommendations=recommendations,
-        committee_review=committee_review
+        committee_review=committee_review,
+        risk_analysis=risk_analysis,
+        portfolio_intelligence=portfolio_intelligence,
+        research_report=research_report,
+        stock_intelligence=stock_intelligence,
+        sector_intelligence=sector_intelligence,
     )
 
     db.add(run)
@@ -25,6 +35,7 @@ def save_portfolio(
     db.close()
 
     return portfolio_id
+
 
 def get_portfolio(portfolio_id):
 
@@ -42,7 +53,9 @@ def get_portfolio(portfolio_id):
 
     return run
 
+
 def get_latest_portfolio():
+
     db = SessionLocal()
 
     portfolio = (

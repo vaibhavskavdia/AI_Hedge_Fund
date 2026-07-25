@@ -80,24 +80,25 @@ class PortfolioManager:
             return {"ticker": ticker,"rating": "HOLD","conviction": "LOW","position_size": 1,"horizon": "Unknown",
                 "bull_case": "Parsing failed","bear_case": "Parsing failed","recommendation": content}
 
-    def analyze_portfolio(self,portfolio: dict):
+    def analyze_portfolio(self,portfolio: dict,recommendations: list | None = None,):
 
     # =====================================
     # Generate AI Recommendations
     # =====================================
 
-        recommendations = []
+        if recommendations is None:
 
-        for ticker in portfolio.keys():
+            recommendations = []
 
-            try:
-                recommendation = self.recommend(ticker=ticker)
+            for ticker in portfolio.keys():
 
-                recommendations.append(recommendation)
+                try:
+                    recommendation = self.recommend(ticker=ticker)
+                    recommendations.append(recommendation)
 
-            except Exception as e:
+                except Exception as e:
 
-                print(f"Recommendation failed for {ticker}: {e}")
+                    print(f"Recommendation failed for {ticker}: {e}")
 
         # =====================================
         # Sector Exposure

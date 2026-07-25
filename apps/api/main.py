@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from apps.api.routes.predictions import router as predictions_router
 from apps.api.routes.portfolio import router as portfolio_router
-#from apps.api.routes.backtest import router as backtest_router
+
 from apps.api.routes.research import (router as research_router)
 from apps.api.routes.risk import router as risk_router
 from apps.api.routes.portfolio_intelligence import (router as intelligence_router)
@@ -12,9 +12,9 @@ app = FastAPI(title="AI Hedge Fund API",version="1.0")
 
 app.include_router(predictions_router)
 app.include_router(portfolio_router)
-#app.include_router(backtest_router)
+
 app.include_router(research_router)
-app.include_router(risk_router)
+
 app.include_router(intelligence_router)
 app.include_router(stock_intelligence_router)
 app.include_router(sector_intelligence_router)

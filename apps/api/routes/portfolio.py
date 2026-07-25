@@ -8,8 +8,11 @@ from apps.api.schemas.recommendation import PortfolioRecommendation
 from agents.portfolio_manager import PortfolioManager
 from agents.portfolio_construction_agent import PortfolioConstructionAgent
 from services.risk.risk_engine import RiskEngine
+import threading
+from services.jobs.job_manager import (create_job,get_job,)
 from services.portfolio.portfolio_repository import save_portfolio, get_latest_portfolio
-
+from services.dashboard.dashboard_builder import DashboardBuilder
+dashboard_builder = DashboardBuilder()
 risk_engine = RiskEngine()
 router = APIRouter(prefix="/portfolio",tags=["Portfolio"])
 
@@ -121,19 +124,21 @@ def ai_recommendation(payload: dict):
     return result
 
 @router.post("/ai-portfolio")
-
 def ai_portfolio(payload: dict):
 
     tickers = payload["tickers"]
 
-    result = (portfolio_constructor.build_portfolio(tickers))
-    portfolio_id = save_portfolio(
-    portfolio=result["portfolio"],
-    recommendations=result["recommendations"],
-    committee_review=result["committee_review"]
-     )
-    result["portfolio_id"]= portfolio_id
-    return result
+    job_id = create_job()
+
+    threading.Thread(
+        target=dashboard_builder.build_dashboard,
+        args=(tickers, job_id),
+        daemon=True,
+    ).start()
+
+    return {
+        "job_id": job_id
+    }
 
 @router.get("/latest")
 def latest_portfolio():
@@ -162,12 +167,26 @@ def portfolio_intelligence():
             "error": "No portfolio found"
         }
 
-    analysis = portfolio_manager.analyze_portfolio(
-        portfolio.portfolio
-    )
+    if portfolio.portfolio_intelligence is None:
+        return {
+            "error": "Portfolio intelligence not generated."
+        }
+
+    analysis = dict(portfolio.portfolio_intelligence)
 
     analysis["portfolio_id"] = portfolio.id
-
     analysis["recommendations"] = portfolio.recommendations
 
     return analysis
+
+@router.get("/job/{job_id}")
+def job_status(job_id: str):
+
+    job = get_job(job_id)
+
+    if job is None:
+        return {
+            "error": "Job not found"
+        }
+
+    return job

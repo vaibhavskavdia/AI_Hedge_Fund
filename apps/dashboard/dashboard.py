@@ -1,5 +1,6 @@
 import streamlit as st
-import requests
+
+from apps.dashboard.utils.cache import cache
 
 st.set_page_config(
     page_title="AI Hedge Fund",
@@ -7,13 +8,14 @@ st.set_page_config(
     layout="wide"
 )
 
+# Load cached data
+cache.load()
+
 st.title("🚀 AI Hedge Fund")
 
 try:
 
-    bt = requests.get(
-        "http://127.0.0.1:8000/backtest/"
-    ).json()
+    bt = st.session_state.backtest
 
     col1, col2, col3, col4 = st.columns(4)
 

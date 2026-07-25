@@ -1,16 +1,94 @@
-fastapi
-uvicorn
-sqlalchemy
-psycopg2-binary
-asyncpg
-python-dotenv
-pydantic
-pandas
-numpy
-yfinance
-requests
-scikit-learn
-xgboost
-alembic
-sec-edgar-downloader
-pinecone
+# ===========================
+# Web Framework
+# ===========================
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+streamlit==1.49.0
+
+# ===========================
+# Database
+# ===========================
+sqlalchemy==2.0.43
+psycopg2-binary==2.9.10
+asyncpg==0.30.0
+alembic==1.16.4
+
+# ===========================
+# Environment
+# ===========================
+python-dotenv==1.1.1
+pydantic==2.11.7
+pydantic-settings==2.10.1
+
+# ===========================
+# Data Science
+# ===========================
+numpy==2.3.2
+pandas==2.3.1
+scikit-learn==1.7.1
+scipy==1.16.1
+joblib==1.5.1
+
+# ===========================
+# Machine Learning
+# ===========================
+xgboost==3.0.4
+
+# ===========================
+# Deep Learning
+# ===========================
+torch==2.8.0
+torchvision==0.23.0
+torchaudio==2.8.0
+
+# ===========================
+# Transformers / NLP
+# ===========================
+transformers==4.55.2
+sentence-transformers==5.1.0
+tokenizers==0.21.4
+huggingface-hub==0.34.4
+
+# ===========================
+# LangChain
+# ===========================
+langchain==0.3.27
+langchain-core==0.3.74
+langchain-text-splitters==0.3.9
+langchain-community==0.3.27
+
+# ===========================
+# Vector Database
+# ===========================
+pinecone==7.3.0
+
+# ===========================
+# LLM Providers
+# ===========================
+groq==0.31.0
+openai==1.99.9
+
+# ===========================
+# Finance
+# ===========================
+yfinance==0.2.65
+sec-edgar-downloader==5.0.3
+
+# ===========================
+# Utilities
+# ===========================
+requests==2.32.4
+httpx==0.28.1
+tqdm==4.67.1
+
+# ===========================
+# Visualization
+# ===========================
+plotly==6.3.0
+matplotlib==3.10.5
+
+# ===========================
+# File Processing
+# ===========================
+openpyxl==3.1.5
+python-multipart==0.0.20
