@@ -5,7 +5,10 @@ from shared.schemas.final_portfolio import FinalPortfolio
 from shared.schemas.news_features import NewsFeature
 from shared.schemas.apis.stock_intelligence import StockIntelligenceResponse
 
-router = APIRouter(prefix="/stock-intelligence",tags=["Stock Intelligence"])
+router = APIRouter(
+    prefix="/stock-intelligence",
+    tags=["Stock Intelligence"],
+)
 
 
 def get_db():
@@ -15,8 +18,13 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/{ticker}",response_model=StockIntelligenceResponse)
-
+@router.get(
+    "/{ticker}",
+    summary="Get stock intelligence",
+    description="Returns AI-generated intelligence and news sentiment for a stock.",
+    response_model=StockIntelligenceResponse,
+    status_code=200,
+)
 def get_stock_intelligence(ticker: str,db: Session = Depends(get_db)):
 
     stock = (db.query(FinalPortfolio).filter(FinalPortfolio.ticker == ticker.upper()).first())

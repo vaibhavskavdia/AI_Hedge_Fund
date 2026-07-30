@@ -1,90 +1,129 @@
 import streamlit as st
 
-from apps.dashboard.utils.cache import cache
-
-st.set_page_config(
-    page_title="AI Hedge Fund",
-    page_icon="📈",
-    layout="wide"
+from components.theme import (
+    apply_theme,
+    section_header,
 )
 
-# Load cached data
-cache.load()
 
-st.title("🚀 AI Hedge Fund")
+# ----------------------------------------------------
+# App Configuration
+# ----------------------------------------------------
 
-try:
+apply_theme()
 
-    bt = st.session_state.backtest
 
-    col1, col2, col3, col4 = st.columns(4)
+# ----------------------------------------------------
+# Sidebar
+# ----------------------------------------------------
 
-    with col1:
-        st.metric(
-            "Total Return",
-            f"{bt['total_return']}%"
-        )
+with st.sidebar:
 
-    with col2:
-        st.metric(
-            "Sharpe Ratio",
-            bt["sharpe_ratio"]
-        )
+    st.markdown(
+        """
+        # 📈 AI Hedge Fund
 
-    with col3:
-        st.metric(
-            "Max Drawdown",
-            f"{bt['max_drawdown']}%"
-        )
+        Institutional-grade AI investment platform.
+        """
+    )
 
-    with col4:
-        st.metric(
-            "Alpha vs SPY",
-            f"{bt['alpha_vs_spy']}%"
-        )
+    st.divider()
 
-except Exception as e:
+    st.page_link(
+        "pages/portfolio.py",
+        label="Portfolio",
+        icon="💼",
+    )
 
-    st.error(str(e))
+    st.page_link(
+        "pages/research.py",
+        label="Research",
+        icon="🔍",
+    )
+
+    st.page_link(
+        "pages/stock_intelligence.py",
+        label="Stock Intelligence",
+        icon="📊",
+    )
+
+    st.page_link(
+        "pages/sector_intelligence.py",
+        label="Sector Intelligence",
+        icon="🏭",
+    )
+
+    st.page_link(
+        "pages/portfolio_intelligence.py",
+        label="Portfolio Intelligence",
+        icon="🧠",
+    )
+
+    st.page_link(
+        "pages/risk.py",
+        label="Risk Analysis",
+        icon="⚠️",
+    )
+
+    st.divider()
+
+    st.caption("Version 1.0")
+
+
+# ----------------------------------------------------
+# Landing Page
+# ----------------------------------------------------
+
+section_header(
+    "AI Hedge Fund",
+    "Institutional AI-powered portfolio management platform",
+)
+
+left, right = st.columns([1.5, 1])
+
+with left:
+
+    st.markdown(
+        """
+### Welcome
+
+Generate institutional-grade AI portfolios using:
+
+- Machine Learning predictions
+- AI equity research
+- Portfolio optimization
+- Investment committee review
+- Portfolio intelligence
+- Risk analytics
+
+Use the navigation menu to begin building your portfolio.
+"""
+    )
+
+with right:
+
+    st.metric(
+        "AI Models",
+        "5",
+    )
+
+    st.metric(
+        "Research Agents",
+        "3",
+    )
+
+    st.metric(
+        "Supported Sectors",
+        "11",
+    )
+
+    st.metric(
+        "Portfolio Engine",
+        "Ready",
+    )
 
 st.divider()
 
-st.subheader("Platform Overview")
-
-c1, c2 = st.columns(2)
-
-with c1:
-
-    st.success("✅ Research Copilot")
-    st.success("✅ Portfolio Construction")
-    st.success("✅ Investment Committee")
-
-with c2:
-
-    st.success("✅ Risk Engine")
-    st.success("✅ Market Predictions")
-    st.success("✅ Performance Analytics")
-
-st.divider()
-
-st.subheader("Project Status")
-
-st.info("""
-Multi-Agent AI Hedge Fund Platform
-
-• Research Agent (RAG)
-
-• Portfolio Manager
-
-• Investment Committee
-
-• Risk Engine
-
-• Agent Memory
-
-• FastAPI Backend
-
-• PostgreSQL Database
-
-• Streamlit Dashboard
-""")
+st.info(
+    "👈 Start by opening **Portfolio** from the sidebar to generate an AI portfolio."
+)

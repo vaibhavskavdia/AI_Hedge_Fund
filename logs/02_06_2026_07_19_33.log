@@ -1,8 +1,0 @@
-2026-06-02 07:19:33,610 - 19 - AI-Hedge_Fund - INFO - Loading feature store data
-2026-06-02 07:19:34,326 - 26 - AI-Hedge_Fund - INFO - Clearing old backtest predictions
-2026-06-02 07:19:34,332 - 33 - AI-Hedge_Fund - INFO - Running Fold 1
-2026-06-02 07:19:34,593 - 33 - AI-Hedge_Fund - INFO - Running Fold 2
-2026-06-02 07:19:34,912 - 33 - AI-Hedge_Fund - INFO - Running Fold 3
-2026-06-02 07:19:35,225 - 33 - AI-Hedge_Fund - INFO - Running Fold 4
-2026-06-02 07:19:35,557 - 33 - AI-Hedge_Fund - INFO - Running Fold 5
-2026-06-02 07:19:37,768 - 56 - AI-Hedge_Fund - INFO - Generated 39615 historical predictions

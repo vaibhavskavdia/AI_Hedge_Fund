@@ -1,8 +1,0 @@
-2026-06-02 07:10:30,336 - 20 - AI-Hedge_Fund - INFO - Loading feature store data
-2026-06-02 07:10:31,212 - 31 - AI-Hedge_Fund - INFO - Starting TimeSeriesSplit prediction generation
-2026-06-02 07:10:31,213 - 35 - AI-Hedge_Fund - INFO - Processing Fold 1
-2026-06-02 07:10:31,355 - 35 - AI-Hedge_Fund - INFO - Processing Fold 2
-2026-06-02 07:10:31,501 - 35 - AI-Hedge_Fund - INFO - Processing Fold 3
-2026-06-02 07:10:31,648 - 35 - AI-Hedge_Fund - INFO - Processing Fold 4
-2026-06-02 07:10:31,820 - 35 - AI-Hedge_Fund - INFO - Processing Fold 5
-2026-06-02 07:10:32,121 - 63 - AI-Hedge_Fund - INFO - Saved 39615 predictions to data/processed/backtest_predictions.csv

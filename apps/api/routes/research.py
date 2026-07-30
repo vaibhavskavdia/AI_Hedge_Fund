@@ -1,21 +1,32 @@
 from fastapi import APIRouter
 from agents.research_agent import ResearchAgent
 from services.rag.memory import (save_memory,get_recent_memories)
+from apps.api.schemas.requests.research_request import ResearchRequest
+from apps.api.schemas.responses.research_response import ResearchResponse
 
 router = APIRouter(prefix="/research",tags=["Research"])
 
 agent = ResearchAgent()
 
 
-@router.post("/")
-def research(payload: dict):
+@router.post(
+    "/",
+    response_model=ResearchResponse,
+)
+def research(request: ResearchRequest):
 
-    question = payload["question"]
-    report = agent.answer(question)
+    report = agent.answer(request.question)
 
-    # Save research to memory
-    save_memory(agent_name="research_agent",memory_key=question,memory_value=report)
-    return {"question": question,"answer": report}
+    save_memory(
+        agent_name="research_agent",
+        memory_key=request.question,
+        memory_value=report,
+    )
+
+    return ResearchResponse(
+        question=request.question,
+        answer=report,
+    )
 
 
 @router.get("/history")

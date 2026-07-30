@@ -16,13 +16,19 @@ def get_db():
         db.close()
 
 
-@router.get("/{sector}",response_model=SectorIntelligenceResponse)
+@router.get(
+    "/{sector}",
+    summary="Get sector intelligence",
+    description="Returns AI-generated intelligence for a market sector.",
+    response_model=SectorIntelligenceResponse,
+    status_code=200,
+)
 
 def get_sector_intelligence(sector: str,db: Session = Depends(get_db)):
 
     stocks = (db.query(FinalPortfolio).filter(func.lower(FinalPortfolio.sector)== sector.lower()).all())
 
-    if len(stocks) == 0:
+    if not stocks:
         raise HTTPException(status_code=404,detail="Sector not found")
 
     avg_prediction = (sum(x.prediction_score for x in stocks)/ len(stocks))
@@ -33,16 +39,16 @@ def get_sector_intelligence(sector: str,db: Session = Depends(get_db)):
 
     ranked = sorted(stocks,key=lambda x: x.portfolio_score,reverse=True)[:5]
 
-    top_stocks = []
-    for stock in ranked:
-        top_stocks.append(
-            TopStock(
-                ticker=stock.ticker,
-                prediction_score=round(stock.prediction_score,4),
-                expected_return_5d=round(stock.expected_return_5d,2),
-                risk_score=round(stock.risk_score,2),
-                recommendation=stock.recommendation))
-
+    top_stocks = [
+    TopStock(
+        ticker=stock.ticker,
+        prediction_score=round(stock.prediction_score, 4),
+        expected_return_5d=round(stock.expected_return_5d, 2),
+        risk_score=round(stock.risk_score, 2),
+        recommendation=stock.recommendation,
+    )
+    for stock in ranked
+]
     return SectorIntelligenceResponse(
         sector=sector,
         stock_count=len(stocks),

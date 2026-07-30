@@ -1,7 +1,11 @@
 import json
-from agents.portfolio_manager import PortfolioManager
+
 from agents.investment_committee import InvestmentCommittee
+from agents.portfolio_manager import PortfolioManager
+
+from services.portfolio.portfolio_allocator import PortfolioAllocator
 from services.rag.memory import save_memory
+
 
 class PortfolioConstructionAgent:
 
@@ -9,7 +13,8 @@ class PortfolioConstructionAgent:
 
         self.portfolio_manager = PortfolioManager()
         self.committee = InvestmentCommittee()
-        
+        self.allocator = PortfolioAllocator()
+
     def build_portfolio(self, tickers):
 
         recommendations = []
@@ -18,41 +23,58 @@ class PortfolioConstructionAgent:
 
             print(f"Analyzing {ticker}...")
 
-            result = self.portfolio_manager.recommend(ticker=ticker)
+            try:
 
-            recommendations.append(result)
+                recommendation = self.portfolio_manager.recommend(
+                    ticker=ticker
+                )
 
-        scores = []
+                recommendations.append(recommendation)
 
-        for rec in recommendations:
+            except Exception as e:
 
-            conviction = rec["conviction"]
+                print(f"{ticker} failed: {e}")
 
-            if conviction == "HIGH":
-                score = 3
+                recommendations.append(
+                    {
+                        "ticker": ticker,
+                        "rating": "HOLD",
+                        "conviction": "LOW",
+                        "position_size": 1,
+                        "horizon": "Unknown",
+                        "bull_case": "Recommendation generation failed.",
+                        "bear_case": "Recommendation generation failed.",
+                        "recommendation": "Skipped due to error.",
+                    }
+                )
 
-            elif conviction == "MEDIUM":
-                score = 2
+        # ---------------------------------
+        # Allocate Portfolio
+        # ---------------------------------
 
-            else:
-                score = 1
+        portfolio = self.allocator.allocate(
+            recommendations
+        )
 
-            scores.append(score)
+        # ---------------------------------
+        # Investment Committee Review
+        # ---------------------------------
 
-        total_score = sum(scores)
+        committee_review = self.committee.review(
+            portfolio
+        )
 
-        portfolio = {}
+        result = {
+            "portfolio": portfolio,
+            "recommendations": recommendations,
+            "committee_review": committee_review,
+        }
 
-        for rec, score in zip(recommendations,scores):
-
-            weight = round((score / total_score) * 100,2)
-            portfolio[rec["ticker"]] = weight
-
-        committee_review = self.committee.review(portfolio)
-
-        result = {"portfolio": portfolio,"recommendations": recommendations,"committee_review": committee_review}
-
-        save_memory(agent_name="portfolio_constructor",memory_key=",".join(tickers),memory_value=json.dumps(result))
+        save_memory(
+            agent_name="portfolio_constructor",
+            memory_key=",".join(tickers),
+            memory_value=json.dumps(result),
+        )
 
         return result
 
@@ -61,6 +83,8 @@ if __name__ == "__main__":
 
     agent = PortfolioConstructionAgent()
 
-    result = agent.build_portfolio(["TSLA","NVDA","AAPL"])
+    result = agent.build_portfolio(
+        ["TSLA", "NVDA", "AAPL"]
+    )
 
-    print(json.dumps(result,indent=4))
+    print(json.dumps(result, indent=4))

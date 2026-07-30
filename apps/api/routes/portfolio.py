@@ -1,23 +1,42 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from shared.configs.database import SessionLocal
-from shared.schemas.portfolio_positions import PortfolioPosition
-from shared.schemas.features import FeatureStore
-from shared.schemas.apis.portfolio import PortfolioResponse
-from apps.api.schemas.recommendation import PortfolioRecommendation
-from agents.portfolio_manager import PortfolioManager
-from agents.portfolio_construction_agent import PortfolioConstructionAgent
-from services.risk.risk_engine import RiskEngine
-import threading
-from services.jobs.job_manager import (create_job,get_job,)
-from services.portfolio.portfolio_repository import save_portfolio, get_latest_portfolio
-from services.dashboard.dashboard_builder import DashboardBuilder
-dashboard_builder = DashboardBuilder()
-risk_engine = RiskEngine()
-router = APIRouter(prefix="/portfolio",tags=["Portfolio"])
 
-portfolio_manager = PortfolioManager()
-portfolio_constructor = (PortfolioConstructionAgent())
+from shared.configs.database import SessionLocal
+
+from shared.schemas.apis.portfolio import (
+    PortfolioResponse,
+    PortfolioRecommendation,
+)
+
+from shared.schemas.portfolio_positions import PortfolioPosition
+
+from apps.api.schemas.requests.portfolio_request import PortfolioRequest
+from apps.api.schemas.requests.recommendation_request import RecommendationRequest
+
+from apps.api.schemas.responses.job_status_response import JobStatusResponse
+from apps.api.schemas.responses.latest_portfolio_response import (
+    LatestPortfolioResponse,
+)
+from apps.api.schemas.responses.portfolio_intelligence_response import (
+    PortfolioIntelligenceResponse,
+)
+from apps.api.schemas.responses.recommendation_response import (
+    RecommendationResponse,
+)
+
+from services.portfolio.portfolio_service import PortfolioService
+from services.portfolio.recommendation_service import RecommendationService
+from services.portfolio.portfolio_repository import get_latest_portfolio
+from services.jobs.job_manager import get_job
+
+router = APIRouter(
+    prefix="/portfolio",
+    tags=["Portfolio"],
+)
+
+recommendation_service = RecommendationService()
+portfolio_service = PortfolioService()
+
 
 def get_db():
     db = SessionLocal()
@@ -29,164 +48,165 @@ def get_db():
         db.close()
 
 
-@router.get("/",response_model=list[PortfolioResponse])
-
+@router.get(
+    "/",
+    summary="Get latest portfolio positions",
+    description="Returns the latest generated portfolio positions.",
+    response_model=list[PortfolioResponse],
+    status_code=200,
+)
 def get_portfolio(db: Session = Depends(get_db)):
 
-    latest_timestamp = (db.query(PortfolioPosition.timestamp).order_by(PortfolioPosition.timestamp.desc()).first())
+    latest_timestamp = (
+        db.query(PortfolioPosition.timestamp)
+        .order_by(PortfolioPosition.timestamp.desc())
+        .first()
+    )
 
     if not latest_timestamp:
         return []
 
-    portfolio = (db.query(PortfolioPosition).filter(PortfolioPosition.timestamp == latest_timestamp[0]).all())
+    portfolio = (
+        db.query(PortfolioPosition)
+        .filter(
+            PortfolioPosition.timestamp == latest_timestamp[0]
+        )
+        .all()
+    )
 
     return portfolio
 
 
-@router.get("/recommend",response_model=list[PortfolioRecommendation])
-
+@router.get(
+    "/recommend",
+    summary="Generate portfolio recommendations",
+    description="Returns portfolio recommendations based on investment amount and risk profile.",
+    response_model=list[PortfolioRecommendation],
+    status_code=200,
+)
 def recommend_portfolio(
-    investment_amount: float = Query(..., gt=0),top_n: int = Query(5, gt=0),
-    risk_profile: str = Query("moderate"),db: Session = Depends(get_db)):
+    investment_amount: float = Query(..., gt=0),
+    top_n: int = Query(5, gt=0),
+    risk_profile: str = Query("moderate"),
+    db: Session = Depends(get_db),
+):
 
-    latest_timestamp = (db.query(PortfolioPosition.timestamp).order_by(PortfolioPosition.timestamp.desc()).first())
+    return recommendation_service.recommend(
+        db=db,
+        investment_amount=investment_amount,
+        top_n=top_n,
+        risk_profile=risk_profile,
+    )
 
-    if not latest_timestamp:
-        return []
 
-    positions = (db.query(PortfolioPosition).filter(PortfolioPosition.timestamp == latest_timestamp[0]).all())
+@router.post(
+    "/ai-recommendation",
+    summary="Generate AI stock recommendation",
+    description="Returns an AI-generated recommendation for a single stock.",
+    response_model=RecommendationResponse,
+    status_code=200,
+)
+def ai_recommendation(
+    request: RecommendationRequest,
+):
 
-    portfolio_data = []
+    return recommendation_service.ai_recommendation(
+        request.ticker,
+    )
 
-    for position in positions:
 
-        feature = (db.query(FeatureStore).filter(FeatureStore.ticker == position.ticker)
-                   .order_by(FeatureStore.timestamp.desc()).first())
+@router.post(
+    "/ai-portfolio",
+    summary="Generate AI portfolio",
+    description="Starts asynchronous AI portfolio generation.",
+    response_model=JobStatusResponse,
+    status_code=202,
+)
+def ai_portfolio(
+    request: PortfolioRequest,
+):
+    return portfolio_service.generate(request)
 
-        if not feature:
-            continue
 
-        risk_result = risk_engine.evaluate_position(feature)
-
-        risk_score = risk_result["risk_score"]
-
-        portfolio_data.append({"position": position,"risk_score": risk_score})
-
-    if risk_profile.lower() == "conservative":
-
-        portfolio_data = sorted(portfolio_data,key=lambda x: x["risk_score"])
-
-    elif risk_profile.lower() == "aggressive":
-
-        portfolio_data = sorted(portfolio_data,
-            key=lambda x: (x["position"].prediction_probability- x["risk_score"] * 0.001),reverse=True)
-
-    else:
-
-        portfolio_data = sorted(
-            portfolio_data,
-            key=lambda x: (x["position"].prediction_probability- x["risk_score"] * 0.005),reverse=True)
-
-    portfolio_data = portfolio_data[:top_n]
-
-    positions = [item["position"] for item in portfolio_data]
-
-    if len(positions) == 0:
-        return []
-
-    total_weight = sum(p.weight for p in positions)
-
-    recommendations = []
-
-    for position in positions:
-
-        normalized_weight = (position.weight / total_weight)
-
-        allocation = (normalized_weight* investment_amount)
-
-        recommendations.append(
-            PortfolioRecommendation(
-                ticker=position.ticker,
-                weight=round(normalized_weight,4),
-                allocation=round(allocation,2),
-                prediction_probability=round(position.prediction_probability,4)))
-
-    return recommendations
-
-@router.post("/ai-recommendation")
-
-def ai_recommendation(payload: dict):
-
-    ticker = payload["ticker"]
-
-    result = portfolio_manager.recommend(ticker=ticker)
-
-    return result
-
-@router.post("/ai-portfolio")
-def ai_portfolio(payload: dict):
-
-    tickers = payload["tickers"]
-
-    job_id = create_job()
-
-    threading.Thread(
-        target=dashboard_builder.build_dashboard,
-        args=(tickers, job_id),
-        daemon=True,
-    ).start()
-
-    return {
-        "job_id": job_id
-    }
-
-@router.get("/latest")
+@router.get(
+    "/latest",
+    summary="Get latest AI portfolio",
+    description="Returns the latest generated portfolio.",
+    response_model=LatestPortfolioResponse,
+    status_code=200,
+)
 def latest_portfolio():
 
     portfolio = get_latest_portfolio()
 
     if portfolio is None:
-        return {"error": "No portfolio found"}
+        raise HTTPException(
+            status_code=404,
+            detail="No portfolio found",
+        )
 
-    return {
-        "portfolio_id": portfolio.id,
-        "portfolio": portfolio.portfolio,
-        "recommendations": portfolio.recommendations,
-        "committee_review": portfolio.committee_review
-    }
+    return LatestPortfolioResponse(
+        portfolio_id=portfolio.id,
+        portfolio=portfolio.portfolio,
+        recommendations=portfolio.recommendations,
+        committee_review=portfolio.committee_review,
+    )
 
-portfolio_manager = PortfolioManager()
 
-@router.get("/portfolio-intelligence")
+@router.get(
+    "/portfolio-intelligence",
+    summary="Get portfolio intelligence",
+    description="Returns AI-generated analysis of the latest portfolio.",
+    response_model=PortfolioIntelligenceResponse,
+    status_code=200,
+)
 def portfolio_intelligence():
 
     portfolio = get_latest_portfolio()
 
     if portfolio is None:
-        return {
-            "error": "No portfolio found"
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="No portfolio found",
+        )
 
     if portfolio.portfolio_intelligence is None:
-        return {
-            "error": "Portfolio intelligence not generated."
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="Portfolio intelligence not generated.",
+        )
 
-    analysis = dict(portfolio.portfolio_intelligence)
+    analysis = {
+        **portfolio.portfolio_intelligence,
+        "portfolio_id": portfolio.id,
+        "recommendations": portfolio.recommendations,
+    }
 
-    analysis["portfolio_id"] = portfolio.id
-    analysis["recommendations"] = portfolio.recommendations
+    return PortfolioIntelligenceResponse(**analysis)
 
-    return analysis
 
-@router.get("/job/{job_id}")
+@router.get(
+    "/job/{job_id}",
+    summary="Get portfolio generation job",
+    description="Returns the current status of a portfolio generation job.",
+    response_model=JobStatusResponse,
+    status_code=200,
+)
 def job_status(job_id: str):
 
     job = get_job(job_id)
 
     if job is None:
-        return {
-            "error": "Job not found"
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found",
+        )
 
-    return job
+    return JobStatusResponse(
+    job_id=job_id,
+    status=job["status"],
+    progress=job.get("progress"),
+    step=job.get("step"),
+    portfolio_id=job.get("portfolio_id"),
+    error=job.get("error"),
+)
