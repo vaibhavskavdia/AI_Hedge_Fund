@@ -6,7 +6,7 @@ import os
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-
+print("DATABASE_URL =", DATABASE_URL) 
 if not DATABASE_URL:
     DATABASE_URL = (
         f"postgresql://{os.getenv('POSTGRES_USER')}:"
