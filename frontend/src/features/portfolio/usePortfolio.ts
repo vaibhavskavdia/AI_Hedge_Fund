@@ -5,13 +5,18 @@ import {
   generatePortfolio,
   getJobStatus,
   getLatestPortfolio,
-  
 } from "../../services/portfolio";
+
+import { getLatestRisk } from "../../services/risk";
+
 import type { PortfolioRequest } from "../../services/portfolio";
+
 export function usePortfolio() {
   const [loading, setLoading] = useState(false);
 
   const [portfolio, setPortfolio] = useState<any>(null);
+
+  const [risk, setRisk] = useState<any>(null);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -65,13 +70,29 @@ export function usePortfolio() {
       }
 
       // ------------------------------------
-      // Load Dashboard
+      // Load Dashboard Data
       // ------------------------------------
 
-      const latest =
+      const latestPortfolio =
         await getLatestPortfolio();
 
-      setPortfolio(latest);
+      setPortfolio(latestPortfolio);
+
+      // ------------------------------------
+      // Load Risk Snapshot
+      // ------------------------------------
+
+      try {
+        const latestRisk =
+          await getLatestRisk();
+
+        setRisk(latestRisk);
+      } catch (error) {
+        console.warn(
+          "Risk snapshot unavailable.",
+          error
+        );
+      }
     } catch (err) {
       console.error(err);
 
@@ -103,6 +124,8 @@ export function usePortfolio() {
     loading,
 
     portfolio,
+
+    risk,
 
     error,
 

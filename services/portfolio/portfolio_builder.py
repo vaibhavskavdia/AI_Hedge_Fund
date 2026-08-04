@@ -16,19 +16,28 @@ ORDER BY timestamp DESC;
 def build_portfolio():
     logger.info("Loading predictions")
     df = pd.read_sql(text(QUERY), engine)
-    # Latest prediction per ticker
-    df = (df.sort_values("timestamp",ascending=False).drop_duplicates(subset=["ticker"],keep="first"))
+    logger.info(f"Total prediction rows: {len(df)}")
 
-    # Long signals only
-    portfolio = df[df["prediction_probability"] >= 0.45].copy()
-    if len(portfolio) == 0:
-        logger.warning("No long positions generated")
-        return
+    df = (
+        df.sort_values("timestamp", ascending=False)
+        .drop_duplicates(subset=["ticker"], keep="first")
+    )
 
-    # Add sector
-    portfolio["sector"] = (portfolio["ticker"].map(SECTOR_MAP))
+    logger.info(f"Unique tickers: {len(df)}")
+
+    portfolio = df.copy()
+
+    logger.info(f"After probability filter: {len(portfolio)}")
+
+    portfolio["sector"] = portfolio["ticker"].map(SECTOR_MAP)
+
+    logger.info(
+        f"Missing sectors: {portfolio['sector'].isna().sum()}"
+    )
+
     portfolio = portfolio.dropna(subset=["sector"])
 
+    logger.info(f"Final portfolio size: {len(portfolio)}")
     # Weighting
     total_prob = (portfolio["prediction_probability"].sum())
     portfolio["weight"] = (portfolio["prediction_probability"]/total_prob)

@@ -7,15 +7,16 @@ import PortfolioOverview from "./components/PortfolioOverview";
 import RecommendationCards from "./components/RecommendationCards";
 import CommitteeReview from "./components/CommitteeReview";
 import PortfolioIntelligence from "./components/PortfolioIntelligence";
-
-
-
+import RiskSnapshot from "./components/RiskSnapshot";
+import PortfolioLoading from "./components/PortfolioLoading";
+import PortfolioEmpty from "./components/PortfolioEmpty";
 import { usePortfolio } from "./usePortfolio";
 
 export default function PortfolioPage() {
   const {
     portfolio,
     loading,
+    risk,
     error,
     progress,
     step,
@@ -85,7 +86,35 @@ export default function PortfolioPage() {
       </div>
     );
   }
-
+if (loading) {
+  return (
+    <div className="max-w-7xl mx-auto p-8">
+      <PortfolioLoading
+        progress={progress}
+        step={step}
+      />
+    </div>
+  );
+}
+if (!portfolio) {
+  return (
+    <div className="max-w-7xl mx-auto p-8">
+      <PortfolioEmpty
+        onGenerate={() =>
+          generatePortfolio({
+            investment_amount: 100000,
+            risk_profile: "Balanced",
+            preferred_sectors: [
+              "Technology",
+              "Healthcare",
+            ],
+            max_holdings: 10,
+          })
+        }
+      />
+    </div>
+  );
+}
   // -----------------------------
   // Dashboard
   // -----------------------------
@@ -117,7 +146,7 @@ export default function PortfolioPage() {
         intelligence={portfolio.portfolio_intelligence}
     />
 )}
-
+<RiskSnapshot risk={risk} />
       {/* Next Components */}
 
       {/* <RecommendationCards /> */}

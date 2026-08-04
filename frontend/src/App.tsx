@@ -3,7 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
 
 import PortfolioPage from "./features/portfolio/PortfolioPage";
-
+import ResearchPage from "./features/research/page/ResearchPage";
+import StockPage from "./features/stock-intelligence/pages/StockPage";
+import SectorPage from "./features/sector-intelligence/pages/SectorPage";
 function App() {
   return (
     <BrowserRouter>
@@ -11,13 +13,13 @@ function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<PortfolioPage />} />
 
-          <Route path="/research" element={<div>Research</div>} />
+          <Route path="/research" element={<ResearchPage />} />
 
-          <Route path="/stocks" element={<div>Stock Intelligence</div>} />
+          <Route path="/stocks" element={<StockPage />} />
 
-          <Route path="/sectors" element={<div>Sector Intelligence</div>} />
+          <Route path="/sectors" element={<SectorPage />} />
 
-          <Route path="/risk" element={<div>Risk</div>} />
+          
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

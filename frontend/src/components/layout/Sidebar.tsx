@@ -3,7 +3,7 @@ import {
   BriefcaseBusiness,
   Building2,
   ChartCandlestick,
-  ShieldCheck,
+  
   Sparkles,
 } from "lucide-react";
 
@@ -28,11 +28,7 @@ const navigation = [
     href: "/sectors",
     icon: Building2,
   },
-  {
-    name: "Risk",
-    href: "/risk",
-    icon: ShieldCheck,
-  },
+  
 ];
 
 export default function Sidebar() {
