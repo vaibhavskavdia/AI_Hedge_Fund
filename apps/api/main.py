@@ -29,6 +29,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "https://ai-hedge-fund-nine.vercel.app",
+        "https://ai-hedge-fund-git-main-vaibhavskvadias-projects.vercel.app",
 
     ],
     allow_credentials=True,
