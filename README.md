@@ -28,8 +28,8 @@ The demonstration includes:
 
 | Service | Link |
 |----------|------|
-| **Frontend** | https://your-vercel-url.vercel.app |
-| **Backend API** | https://your-railway-url.up.railway.app |
+| **Frontend** | https://ai-hedge-fund-git-main-vaibhavskavdias-projects.vercel.app |
+| **Backend API** | web-production-9837e.up.railway.app |
 
 ---
 
