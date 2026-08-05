@@ -6,11 +6,10 @@
 
 # 🎥 Product Demo
 
-> **Watch the complete application in action (3-minute walkthrough).**
+> **Watch the complete application in action (30 seconds walkthrough).**
 
 https://github.com/user-attachments/assets/2db93c61-9ecd-47ef-b567-fc3082b863e8
 
-https://github.com/user-attachments/assets/your-video-id
 
 The demonstration includes:
 
@@ -19,7 +18,6 @@ The demonstration includes:
 - Stock Intelligence
 - Sector Analytics
 - Research Dashboard
-- Risk Analysis
 - End-to-End Workflow
 
 ---
@@ -614,38 +612,14 @@ DATABASE_URL=
 GROQ_API_KEY=
 PINECONE_API_KEY=
 ```
-# 📸 Application Preview
-
-## Portfolio Generator
-
-![Portfolio](images/portfolio.png)
-
----
-
-## Stock Intelligence
-
-![Stocks](images/stocks.png)
-
----
-
-## Sector Analytics
-
-![Sectors](images/sectors.png)
-
----
-
-## Research Dashboard
-
-![Research](images/research.png)
-
 # 👨‍💻 Author
 
 **Vaibhav Kavdia**
 
 B.Tech, Indian Institute of Technology Roorkee
 
-- GitHub: https://github.com/yourusername
-- LinkedIn: https://linkedin.com/in/yourprofile
+- GitHub: https://github.com/vaibhavskavida
+- LinkedIn: https://linkedin.com/in/vaibhav-kavdia-a1a217253/
 
 ---
 
