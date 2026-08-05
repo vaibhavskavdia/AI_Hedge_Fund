@@ -8,7 +8,7 @@
 
 > **Watch the complete application in action (3-minute walkthrough).**
 
-<!-- Replace this with your uploaded GitHub video -->
+https://github.com/user-attachments/assets/2db93c61-9ecd-47ef-b567-fc3082b863e8
 
 https://github.com/user-attachments/assets/your-video-id
 

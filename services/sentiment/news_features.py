@@ -55,19 +55,19 @@ def generate_news_features():
         positive_count = sum(
             1
             for r in rows
-            if r.sentiment == "positive"
+            if r.sentiment.lower() == "positive"
         )
 
         negative_count = sum(
             1
             for r in rows
-            if r.sentiment == "negative"
+            if r.sentiment.lower() == "negative"
         )
 
         neutral_count = sum(
             1
             for r in rows
-            if r.sentiment == "neutral"
+            if r.sentiment.lower() == "neutral"
         )
 
         feature = NewsFeature(

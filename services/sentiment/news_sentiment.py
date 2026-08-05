@@ -16,7 +16,7 @@ def generate_news_sentiment():
             if not article.headline:
                 continue
             result = sentiment_model(article.headline)[0]
-            sentiment = result["label"]
+            sentiment = result["label"].strip().lower()
             score = float(result["score"])
             sentiment_row = NewsSentiment(ticker=article.ticker,timestamp=article.created_at,headline=article.headline,sentiment=sentiment,score=score)
             db.add(sentiment_row)
