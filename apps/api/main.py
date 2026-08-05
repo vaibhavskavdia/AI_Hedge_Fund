@@ -31,7 +31,7 @@ app.add_middleware(
         "https://ai-hedge-fund-nine.vercel.app",
         "https://ai-hedge-fund-git-main-vaibhavskvadias-projects.vercel.app",
 
-    ],
+    ],allow_origin_regex=r"https://ai-hedge-fund-.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
